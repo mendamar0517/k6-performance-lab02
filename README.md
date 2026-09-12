@@ -38,14 +38,17 @@ k6-ийн хувилбарыг `results/k6-version.txt` файлд хадгал�
 
 Үндсэн performance test нь `script.js` файлд байрлана.
 
-Тестийн үндсэн тохиргоо нь 5 VU, 30 секундын baseline test юм.
+Baseline test нь анхны туршилтаар 5 VU, 30 секундын тохиргоотой хийгдсэн. Харин 5/30/100 VU-ийн харьцуулалтад 5 VU-ийн 1 минутын тусдаа run (`results/run-05vu.txt`)-ийг baseline болгон ашигласан.
 
-30 болон 100 VU туршилтыг command line-ээр тус тусад нь ажиллуулсан.
+5, 30 болон 100 VU-ийн харьцуулалтыг тусдаа 1 минутын run-уудаар хийсэн.
 
 Жишээ командууд:
 
-    k6 run --vus 30 --duration 1m script.js
-    k6 run --vus 100 --duration 1m script.js
+    k6 run --vus 5 --duration 1m script.js | tee results/run-05vu.txt
+
+    k6 run --vus 30 --duration 1m script.js | tee results/run-30vu.txt
+
+    k6 run --vus 100 --duration 1m script.js | tee results/run-100vu.txt
 
 Ингэснээр 5, 30, 100 VU-ийн үр дүнг тусдаа хэмжиж, хооронд нь харьцуулсан.
 
@@ -82,15 +85,15 @@ Error rate нь нийт request-ээс алдаатай болсон request-и
 
 ## 6. 5 / 30 / 100 VU-ийн харьцуулалт
 
-| Load | p90 | p95 | Throughput | Error Rate |
-|---:|---:|---:|---:|---:|
-| **5 VU** | 256.85 ms | 297.95 ms | 7.23833 req/s | 0% |
-| **30 VU** | 233.43 ms | 235.20 ms | 43.756468 req/s | 0% |
-| **100 VU** | 233.24 ms | 235.37 ms | 144.041152 req/s | 0% |
+|       Load |       p90 |       p95 |       Throughput | Error Rate |
+| ---------: | --------: | --------: | ---------------: | ---------: |
+|   **5 VU** | 297.95 ms | 311.84 ms |   7.354616 req/s |         0% |
+|  **30 VU** | 233.43 ms | 235.20 ms |  43.756468 req/s |         0% |
+| **100 VU** | 233.24 ms | 235.37 ms | 144.041152 req/s |         0% |
 
 ### Үр дүнгийн тайлбар
 
-5 VU-ийн baseline туршилтаар p95 latency **297.95 ms**, throughput **7.23833 req/s**, error rate **0%** гарсан.
+5 VU-ийн шинэ baseline туршилтаар p95 latency **311.84 ms**, throughput **7.354616 req/s**, error rate **0%** гарсан.
 
 30 VU үед p95 latency **235.20 ms** болж, throughput **43.756468 req/s** хүртэл нэмэгдсэн.
 
@@ -98,7 +101,7 @@ Error rate нь нийт request-ээс алдаатай болсон request-и
 
 Ачааллыг 5-аас 100 VU хүртэл нэмэгдүүлэхэд throughput мэдэгдэхүйц өссөн боловч энэ туршилтаар p95 latency муудах үзэгдэл ажиглагдаагүй.
 
-100 VU үед throughput нь baseline-тай харьцуулахад ойролцоогоор 20 дахин өссөн.
+100 VU үед throughput нь 5 VU baseline-тай харьцуулахад ойролцоогоор **19.6 дахин** өссөн.
 
 Гэхдээ 100 VU үед maximum latency **3.95 секунд** хүрсэн нь зарим request-д өндөр latency үүссэн outlier байгааг харуулж байна.
 
@@ -136,17 +139,17 @@ Stage test-ийн нийт үр дүн:
 
 Энэ лабораторийн ажилд SLO threshold-ийг baseline хэмжилт дээр үндэслэн сонгосон.
 
-Baseline-ийн p95 latency:
+Шинэ baseline-ийн p95 latency:
 
-**297.95 ms**
+**311.84 ms**
 
 SLO-г baseline p95-ийн 1.5 дахин их утгаар тооцсон:
 
-**297.95 × 1.5 = 446.925 ms**
+**311.84 × 1.5 = 467.76 ms**
 
 Ойролцоогоор:
 
-**SLO p95 < 447 ms**
+**SLO p95 < 468 ms**
 
 гэж сонгосон.
 
@@ -156,7 +159,7 @@ SLO-г baseline p95-ийн 1.5 дахин их утгаар тооцсон:
 
 гэсэн threshold ашигласан.
 
-447 ms threshold нь дурын утга биш бөгөөд тухайн орчны baseline performance дээр үндэслэн сонгосон. Baseline-ийн p95-ээс 1.5 дахин өндөр хязгаар тогтоосноор baseline-тай харьцуулахад тодорхой хэмжээний performance variation гарах боломжийг тооцсон.
+468 ms threshold нь дурын утга биш бөгөөд тухайн орчны baseline performance дээр үндэслэн сонгосон. Baseline-ийн p95-ээс 1.5 дахин өндөр хязгаар тогтоосноор baseline-тай харьцуулахад тодорхой хэмжээний performance variation гарах боломжийг тооцсон.
 
 ---
 
@@ -164,18 +167,18 @@ SLO-г baseline p95-ийн 1.5 дахин их утгаар тооцсон:
 
 `threshold-pass.js` файлд дараах threshold-ийг тохируулсан:
 
-- `http_req_duration`: `p(95)<447`
+- `http_req_duration`: `p(95)<468`
 - `http_req_failed`: `rate<0.01`
 
 Бодит үр дүн:
 
-- **p95 = 234.92 ms**
+- **p95 = 237.43 ms**
 - **Error rate = 0.00%**
 
 Шалгалт:
 
-- 234.92 ms < 447 ms
-- 0.00% < 1%
+- **237.43 ms < 468 ms**
+- **0.00% < 1%**
 
 Иймээс:
 
@@ -200,7 +203,7 @@ Threshold-ийн FAIL төлөвийг шалгахын тулд зориуда�
 
 Шалгалт:
 
-- 234.85 ms > 100 ms
+- **234.85 ms > 100 ms**
 
 Иймээс latency threshold хангагдаагүй:
 
@@ -216,7 +219,7 @@ Threshold-ийн FAIL төлөвийг шалгахын тулд зориуда�
 
 ## 11. Дүгнэлт
 
-Энэхүү лабораторийн ажлаар Grafana k6 ашиглан performance testing хийж, latency, throughput болон error rate үзүүлэлтүүдийг бодитоор хэмжсэн. 5 VU baseline туршилтаар p95 latency 297.95 ms, throughput 7.23833 req/s, error rate 0% гарсан. 30 VU үед throughput 43.756468 req/s болж мэдэгдэхүйц өссөн бөгөөд p95 latency 235.20 ms байсан. 100 VU үед throughput 144.041152 req/s хүрч, error rate 0% хэвээр хадгалагдсан. Энэ туршилтын хүрээнд ачаалал нэмэгдэхэд p95 latency өсөөгүй бөгөөд 30 болон 100 VU үед ойролцоо түвшинд байсан. Гэсэн хэдий ч 100 VU үед maximum latency 3.95 секунд хүрсэн нь зарим request-д өндөр latency үүссэн outlier байгааг харуулсан. Baseline-ийн p95 дээр үндэслэн 447 ms-ийн SLO сонгож, бодит threshold test-ээр PASS төлөвийг баталгаажуулсан. Мөн зориудаар 100 ms гэсэн хатуу threshold ашиглан FAIL төлөвийг амжилттай харуулсан. Иймээс k6 нь performance metrics-ийг тоон утгаар хэмжихээс гадна тодорхой SLO/threshold ашиглан системийн performance quality-г автоматаар үнэлэх боломжтойг туршилтаар харууллаа.
+Энэхүү лабораторийн ажлаар Grafana k6 ашиглан performance testing хийж, latency, throughput болон error rate үзүүлэлтүүдийг бодитоор хэмжсэн. 5 VU-ийн шинэ baseline туршилтаар p95 latency **311.84 ms**, throughput **7.354616 req/s**, error rate **0%** гарсан. 30 VU үед throughput **43.756468 req/s** болж мэдэгдэхүйц өссөн бөгөөд p95 latency **235.20 ms** байсан. 100 VU үед throughput **144.041152 req/s** хүрч, error rate **0%** хэвээр хадгалагдсан. Энэ туршилтын хүрээнд ачаалал нэмэгдэхэд p95 latency өсөөгүй бөгөөд 30 болон 100 VU үед ойролцоо түвшинд байсан. 5-аас 100 VU хүртэл нэмэгдүүлэхэд throughput ойролцоогоор **19.6 дахин** өссөн байна. Гэсэн хэдий ч 100 VU үед maximum latency **3.95 секунд** хүрсэн нь зарим request-д өндөр latency үүссэн outlier байгааг харуулсан. Шинэ baseline-ийн p95 дээр үндэслэн **468 ms**-ийн SLO сонгож, бодит threshold test-ээр PASS төлөвийг баталгаажуулсан. Мөн зориудаар **100 ms** гэсэн хатуу threshold ашиглан FAIL төлөвийг амжилттай харуулсан. Иймээс k6 нь performance metrics-ийг тоон утгаар хэмжихээс гадна тодорхой SLO/threshold ашиглан системийн performance quality-г автоматаар үнэлэх боломжтойг туршилтаар харууллаа.
 
 ---
 
@@ -224,7 +227,7 @@ Threshold-ийн FAIL төлөвийг шалгахын тулд зориуда�
 
 Бодит k6 test output-ууд:
 
-- [Baseline — 5 VU](results/run-baseline.txt)
+- [Baseline — 5 VU](results/run-05vu.txt)
 - [30 VU](results/run-30vu.txt)
 - [100 VU](results/run-100vu.txt)
 - [Stage Test](results/stages.txt)
@@ -239,17 +242,31 @@ Test scripts:
 - `threshold-pass.js`
 - `threshold-fail.js`
 
+k6 Version:
+
+k6 v2.2.0 (commit/devel, go1.26.5, darwin/arm64)
+
 ---
 
-## 13. AI ашигласан тухай
+## 13. k6 Summary Screenshots
+
+k6-ийн бодит summary output-уудын screenshot-уудыг `docs/` folder-д хадгалсан.
+
+- [5 VU Summary](docs/run-05vu.png)
+- [30 VU Summary](docs/run-30vu.png)
+- [100 VU Summary](docs/run-100vu.png)
+
+---
+
+## 14. AI ашигласан тухай
 
 Энэхүү лабораторийн ажлыг хийх явцад AI-ийг k6-ийн performance metrics, p90/p95, throughput, error rate болон threshold/SLO тохиргоог ойлгох, туршилтын үр дүнг тайлбарлах, README-ийн бүтцийг боловсруулахад туслах зорилгоор ашигласан.
 
-Харин test target URL, k6 test execution болон дээрх performance measurement-үүдийг өөрөө ажиллуулж, бодит k6 output-оор шалгасан.
+Харин test target URL, k6 test execution болон performance measurement-үүдийг өөрөө ажиллуулж, бодит k6 output-оор шалгасан.
 
 ---
 
-## 14. Файлын бүтэц
+## 15. Файлын бүтэц
 
     k6-performance-lab02/
     ├── README.md
@@ -259,9 +276,14 @@ Test scripts:
     ├── threshold-pass.js
     ├── threshold-fail.js
     │
+    ├── docs/
+    │   ├── baseline-5vu.png
+    │   ├── run-30vu.png
+    │   ├── run-100vu.png
+    │
     └── results/
         ├── k6-version.txt
-        ├── run-baseline.txt
+        ├── run-05vu.txt
         ├── run-30vu.txt
         ├── run-100vu.txt
         ├── stages.txt

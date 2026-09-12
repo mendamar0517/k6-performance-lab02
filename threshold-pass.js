@@ -7,7 +7,7 @@ export const options = {
 
   thresholds: {
     // SLO: baseline p95 × 1.5 ≈ 447 ms
-    http_req_duration: ["p(95)<447"],
+    http_req_duration: ["p(95)<468"],
 
     // Error rate must remain below 1%
     http_req_failed: ["rate<0.01"],
